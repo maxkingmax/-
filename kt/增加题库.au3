@@ -1,6 +1,5 @@
 ﻿#include<array.au3>
 #include <ColorConstants.au3>
-
 #include <ButtonConstants.au3>
 #include <ComboConstants.au3>
 #include <EditConstants.au3>
@@ -29,12 +28,8 @@ $wordf=""
 $pptf=""
 $excelf=""
 $pythonf=""
-#include <ButtonConstants.au3>
-#include <ComboConstants.au3>
-#include <EditConstants.au3>
-#include <GUIConstantsEx.au3>
-#include <StaticConstants.au3>
-#include <WindowsConstants.au3>
+
+
 #Region ### START Koda GUI section ### Form=
 $Form1_1 = GUICreate("题库编辑器", 702, 581, 629, 219)
 $numc = GUICtrlCreateCombo("", 88, 16, 105, 25)
