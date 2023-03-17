@@ -1,5 +1,6 @@
 ﻿#include<array.au3>
 #include <ColorConstants.au3>
+
 #include <ButtonConstants.au3>
 #include <ComboConstants.au3>
 #include <EditConstants.au3>
@@ -22,14 +23,19 @@ For $i=1 To $num[1][1]
 	$a&=$i&"|"
 Next
 ;~ MsgBox(0,"",$a)
-
+$zhizhen=""
 $psf=""
 $wordf=""
 $pptf=""
 $excelf=""
 $pythonf=""
-
-
+$edittrue=0
+#include <ButtonConstants.au3>
+#include <ComboConstants.au3>
+#include <EditConstants.au3>
+#include <GUIConstantsEx.au3>
+#include <StaticConstants.au3>
+#include <WindowsConstants.au3>
 #Region ### START Koda GUI section ### Form=
 $Form1_1 = GUICreate("题库编辑器", 702, 581, 629, 219)
 $numc = GUICtrlCreateCombo("", 88, 16, 105, 25)
@@ -50,7 +56,7 @@ $excelt = GUICtrlCreateEdit("", 16, 364, 585, 89)
 GUICtrlSetData(-1, "")
 $pythont = GUICtrlCreateEdit("", 16, 467, 585, 89)
 GUICtrlSetData(-1, "")
-$psfb = GUICtrlCreateButton("PS文件", 616, 72, 75, 57)
+$psfb = GUICtrlCreateButton("PS文件", 616, 72, 75, 57,$BS_MULTILINE)
 GUICtrlSetState(-1,$GUI_Disable)
 $wordfb = GUICtrlCreateButton("WORD文件", 616, 168, 75, 57)
 GUICtrlSetState(-1,$GUI_Disable)
@@ -78,7 +84,12 @@ While 1
 	$nMsg = GUIGetMsg()
 	Switch $nMsg
 		Case $numc
+			$zhizhen=GUICtrlRead($numc)
 			dispdata()
+			GUICtrlSetState($button1,$GUI_Enable)
+		Case	$button1
+			editdata()
+			$edittrue=1
 		Case $Button2
 			$a=""
 			For $i=1 To $num[1][1]+1
@@ -89,10 +100,13 @@ While 1
 			GUICtrlSetData($numc,$a,$i-1)
 			adddata()
 		Case $Button3
-			editdata()
+			savedata()
 		Case $psfb
 			$psf=FileSelectFolder("指定题目所在文件夹","",0,"",$Form1_1)
-			If Not $psf="" Then				GUICtrlSetColor($psfb,$COLOR_RED)
+			If Not $psf="" Then				
+				GUICtrlSetColor($psfb,$COLOR_RED)
+				GUICtrlSetData($psfb,$psf)
+				EndIf
 			If $psf="" Then				GUICtrlSetColor($psfb,$COLOR_Black)	
 
 		Case $wordfb
@@ -125,20 +139,22 @@ While 1
 WEnd
 
 
-;~ _ArrayDisplay($ps)
+_ArrayDisplay($ps)
 ;~ _ArrayDisplay($word)
 ;~ _ArrayDisplay($ppt)
 ;~ _ArrayDisplay($excel)
 ;~ _ArrayDisplay($python)
 
 
-Func dispdata($zhizhen=GUICtrlRead($numc))
+Func dispdata()
 	
 GUICtrlSetData($pst,StringReplace($ps[$zhizhen][1],"#",@CRLF))
 GUICtrlSetData($wordt,StringReplace($word[$zhizhen][1],"#",@CRLF))
 GUICtrlSetData($pptt,StringReplace($ppt[$zhizhen][1],"#",@CRLF))
 GUICtrlSetData($excelt,StringReplace($excel[$zhizhen][1],"#",@CRLF))
 GUICtrlSetData($pythont,StringReplace($python[$zhizhen][1],"#",@CRLF))
+
+
 EndFunc
 
 Func adddata()
@@ -154,73 +170,130 @@ GUICtrlSetState($pptfb,$GUI_Enable)
 GUICtrlSetState($excelfb,$GUI_Enable)
 GUICtrlSetState($pythonfb,$GUI_Enable)
 GUICtrlSetState($button3,$GUI_Enable)
+
+GUICtrlSetData($pst,""   )
+GUICtrlSetData($wordt,"")
+GUICtrlSetData($pptt,"")
+GUICtrlSetData($excelt,"")
+GUICtrlSetData($pythont,"")
+
+GUICtrlSetState($button2,$GUI_Disable)
+EndFunc
+
+
+Func editdata()
+	
+GUICtrlSetState($pst,$GUI_Enable)
+GUICtrlSetState($wordt,$GUI_Enable)
+GUICtrlSetState($pptt,$GUI_Enable)
+GUICtrlSetState($excelt,$GUI_Enable)
+GUICtrlSetState($pythont,$GUI_Enable)
+;GUICtrlSetState($psfb,$GUI_Enable)
+;~ GUICtrlSetState($wordfb,$GUI_Enable)
+;~ GUICtrlSetState($pptfb,$GUI_Enable)
+;~ GUICtrlSetState($excelfb,$GUI_Enable)
+;~ GUICtrlSetState($pythonfb,$GUI_Enable)
+GUICtrlSetState($button3,$GUI_Enable)
+
 EndFunc
 
 
 
-Func editdata($zhizhen=GUICtrlRead($numc))
-	If $psf="" Or $wordf="" Or $pptf="" Or $excelf="" Or $pythonf="" Or GUICtrlRead($pst)="" Or GUICtrlRead($wordt)=""  Or GUICtrlRead($pptt)=""  Or GUICtrlRead($excelt)=""  Or GUICtrlRead($pythont)="" Then 
+
+
+
+Func savedata()
+	$zhizhen=GUICtrlRead($numc)
+	FileCopy("tm.ini",@scriptdir&"\tm"&@MDAY&@HOUR&@SEC&".ini.bak")		
+	If $edittrue=0 Then
+		If $psf="" Or $wordf="" Or $pptf="" Or $excelf="" Or $pythonf="" Or GUICtrlRead($pst)="" or GUICtrlRead($wordt)=""  Or GUICtrlRead($pptt)=""  Or GUICtrlRead($excelt)=""  Or GUICtrlRead($pythont)="" Then 
 		MsgBox(0,"错误","有未指定的内容！",0,$Form1_1)
-	Else
+		Else
+			If $zhizhen > $num[1][1] Then
+				$num[1][1]+=1
+				
+				IniWrite("tm.ini","tkshu","sum",$num[1][1])
+			EndIf
+		EndIf
 		
-	IniWrite("tm.ini","tkshu","sum",$zhizhen)
-	FileCopy("tm.ini",@scriptdir&"\tm.bak")
+	EndIf	
 	
-	$ps[0][0]=$zhizhen+1
-	If UBound($ps)=$ps[0][0]-1 Then
+	If $zhizhen>$ps[0][0] Then	
 	_ArrayAdd($ps,"tm"&$zhizhen&"|"&"本地工作目录：C:\EXAM\PhotoShop操作。##"&StringReplace(GUICtrlRead($pst),@crlf,"#"))
-;~ 	_arraydisplay($ps)
+	
 ;~ 	DirCreate($zhizhen&"\PhotoShop操作")
+	$ps[0][0]+=1
+	_arraydisplay($ps)
 	FileCopy($psf&"\*.*",@ScriptDir&"\"&$zhizhen&"\PhotoShop操作\",8)
-	IniWriteSection("tm.ini","ps",$ps)
+	ElseIf $zhizhen<=$ps[0][0] Then
+	$ps[$zhizhen][1]=StringReplace(GUICtrlRead($pst),@crlf,"#")
+	_arraydisplay($ps)
 	EndIf
+	IniWriteSection("tm.ini","ps",$ps)
 	
 	
-	
-	
-	
-	
-	$word[0][0]=$zhizhen+1
-	If UBound($word)=$word[0][0]-1 Then
+	If $zhizhen>$word[0][0] Then	
 	_ArrayAdd($word,"tm"&$zhizhen&"|"&"本地工作目录：C:\EXAM\Word操作。##"&StringReplace(GUICtrlRead($wordt),@crlf,"#"))
 ;~ 	_arraydisplay($word)
 ;~ 	DirCreate($zhizhen&"\PhotoShop操作")
+	$word[0][0]+=1
 	FileCopy($wordf&"\*.*",@ScriptDir&"\"&$zhizhen&"\Word操作\",8)
-	IniWriteSection("tm.ini","word",$word)
+	ElseIf	$zhizhen<=$word[0][0] Then
+	$word[$zhizhen][1]=StringReplace(GUICtrlRead($wordt),@crlf,"#")
 	EndIf
 	
-	$ppt[0][0]=$zhizhen+1
-	If UBound($ppt)=$ppt[0][0]-1 Then
+	IniWriteSection("tm.ini","word",$word)
+	
+	
+	
+	If $zhizhen>$ppt[0][0] Then
 	_ArrayAdd($ppt,"tm"&$zhizhen&"|"&"本地工作目录：C:\EXAM\Powerpoint操作。##"&StringReplace(GUICtrlRead($pptt),@crlf,"#"))
 ;~ 	_arraydisplay($ppt)
-;~ 	DirCreate($zhizhen&"\PhotoShop操作")
+	$ppt[0][0]+=1
 	FileCopy($pptf&"\*.*",@ScriptDir&"\"&$zhizhen&"\Powerpoint操作\",8)
-	IniWriteSection("tm.ini","ppt",$ppt)
+	ElseIf $zhizhen<=$ppt[0][0] Then
+	$ppt[$zhizhen][1]=StringReplace(GUICtrlRead($pptt),@crlf,"#")
 	EndIf
+;~ 	DirCreate($zhizhen&"\PhotoShop操作")
 	
-	$excel[0][0]=$zhizhen+1
-	If UBound($excel)=$excel[0][0]-1 Then
+	IniWriteSection("tm.ini","ppt",$ppt)
+
+	
+	
+	If $zhizhen>$excel[0][0] Then
 	_ArrayAdd($excel,"tm"&$zhizhen&"|"&"本地工作目录：C:\EXAM\Excel操作。##"&StringReplace(GUICtrlRead($excelt),@crlf,"#"))
 ;~ 	_arraydisplay($excel)
-;~ 	DirCreate($zhizhen&"\PhotoShop操作")
-	FileCopy($excelf&"\*.*",@ScriptDir&"\"&$zhizhen&"\Excel操作\",8)
-	IniWriteSection("tm.ini","excel",$excel)
+$excel[0][0]+=1
+FileCopy($excelf&"\*.*",@ScriptDir&"\"&$zhizhen&"\Excel操作\",8)
+	ElseIf $zhizhen<=$excel[0][0] Then
+	$excel[$zhizhen][1]=StringReplace(GUICtrlRead($excelt),@crlf,"#")
 	EndIf
+;~ 	DirCreate($zhizhen&"\PhotoShop操作")
+	
+	IniWriteSection("tm.ini","excel",$excel)
 	
 	
-	$python[0][0]=$zhizhen+1
-	If UBound($python)=$python[0][0]-1 Then
+	
+	
+	If $zhizhen>$python[0][0] Then
 	_ArrayAdd($python,"tm"&$zhizhen&"|"&"本地工作目录：C:\EXAM\Python操作。##"&StringReplace(GUICtrlRead($pythont),@crlf,"#"))
 ;~ 	_arraydisplay($python)
-;~ 	DirCreate($zhizhen&"\PhotoShop操作")
-	FileCopy($pythonf&"\*.*",@ScriptDir&"\"&$zhizhen&"\Python操作\",8)
-	IniWriteSection("tm.ini","python",$python)
+$python[0][0]+=1
+FileCopy($pythonf&"\*.*",@ScriptDir&"\"&$zhizhen&"\Python操作\",8)
+	ElseIf $zhizhen<= $python[0][0] Then
+	$python[$zhizhen][1]=StringReplace(GUICtrlRead($pythont),@crlf,"#")
 	EndIf
+	
+;~ 	DirCreate($zhizhen&"\PhotoShop操作")
+	
+	IniWriteSection("tm.ini","python",$python)
+	
 	
 	
 	
 	MsgBox(0,"保存成功","保存题库成功",0,$Form1_1)
-	EndIf
+	GUICtrlSetState($button3,$GUI_Disable)
+	
 	
 	
 	endfunc
