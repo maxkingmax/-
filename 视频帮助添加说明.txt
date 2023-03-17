@@ -1,0 +1,18 @@
+程序目录下 新建 “help”文件夹，在help文件夹内，对应题库号，新建文件夹 第1套对应  1,以此类推
+每个题库内放入视频文件，(注意不要有空格)名为“Word操作.mp4","Excel操作.mp4","Photoshop操作.mp4","PowerPoint操作.mp4","Python操作.mp4"
+
+├─help
+│  ├─1
+│  │  ├─Excel操作.mp4
+│  │  ├─Flash操作.mp4
+│  │  ├─Photoshop操作.mp4
+│  │  ├─Powerpoint操作.mp4
+│  │  ├─Python操作.mp4
+│  │  └─Word操作.mp4
+   └─2
+│  │  ├─Excel操作.mp4
+│  │  ├─Flash操作.mp4
+│  │  ├─Photoshop操作.mp4
+│  │  ├─Powerpoint操作.mp4
+│  │  ├─Python操作.mp4
+│  │  └─Word操作.mp4
