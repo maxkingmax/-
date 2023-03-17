@@ -103,10 +103,7 @@ While 1
 			savedata()
 		Case $psfb
 			$psf=FileSelectFolder("指定题目所在文件夹","",0,"",$Form1_1)
-			If Not $psf="" Then				
-				GUICtrlSetColor($psfb,$COLOR_RED)
-				GUICtrlSetData($psfb,$psf)
-				EndIf
+			If Not $psf="" Then	GUICtrlSetColor($psfb,$COLOR_RED)			
 			If $psf="" Then				GUICtrlSetColor($psfb,$COLOR_Black)	
 
 		Case $wordfb
